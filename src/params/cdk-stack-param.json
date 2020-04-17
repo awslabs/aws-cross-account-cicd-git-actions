@@ -1,0 +1,3 @@
+{
+  "CFN_EXECUTION_ROLE": "arn:aws:iam::<target-account-id>:role/git-action-cf-execution-role"
+}
