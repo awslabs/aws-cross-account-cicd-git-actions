@@ -1,0 +1,44 @@
+name: Lambda API CICD Workflow
+# This workflow is triggered on pushes to the repository branch master.
+on:
+  push:
+    branches:
+      - master
+
+# Initializes environment variables for the workflow
+env:
+  REGION: us-west-2 # Deployment Region
+
+jobs:
+  deploy:
+    name: Build And Deploy
+    # This job runs on Linux
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout code from git repo branch configured above, under folder $GITHUB_WORKSPACE.
+      - name: Checkout
+        uses: actions/checkout@v2
+      # Sets up AWS profile.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.TOOLS_ACCOUNT_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.TOOLS_ACCOUNT_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.REGION }}
+          role-to-assume: ${{ secrets.CROSS_ACCOUNT_ROLE }}
+          role-duration-seconds: 1200
+          role-session-name: GitActionDeploymentSession
+      # Installs CDK and other prerequisites
+      - name: Prerequisite Installation
+        run: |
+          sudo npm install -g aws-cdk@1.31.0
+          cdk --version
+          aws s3 ls
+      # Build and Deploy CDK application
+      - name: Build & Deploy
+        run: |
+          cd $GITHUB_WORKSPACE
+          ls -a
+          chmod 700 deploy.sh
+          ./deploy.sh
+          
