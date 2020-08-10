@@ -1,4 +1,4 @@
-name: Lambda API CICD Workflow
+name: Lambda API CICD Workflow (us-east-1)
 # This workflow is triggered on pushes to the repository branch master.
 on:
   push:
